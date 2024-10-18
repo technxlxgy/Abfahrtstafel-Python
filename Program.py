@@ -1,21 +1,33 @@
-import urllib.parse
-import urllib.request
+import json
 
-url = "http://transport.opendata.ch/v1/stationboard"
-params = {
-    "station": "Zurich",
-    "limit": 3,
-    "fields[]": "stationboard/stop/departure",
-    "fields[]": "stationboard/stop/delay",
-    "fields[]": "stationboard/category",
-    "fields[]": "stationboard/number",
-    "fields[]": "stationboard/to"
-}
+import requests
 
-query_string = urllib.parse.urlencode(params)
+from objects import StationboardResponse
 
-url = url + "?" + query_string
+DEFAULT_STATION = "Romanshorn"
+DEFAULT_LIMIT = 3
 
-with urllib.request.urlopen(url) as response:
-    response_text = response.read()
-    print(response_text)
+
+def get_request(station, limit):
+    api_url = "http://transport.opendata.ch/v1/stationboard"
+    params = {
+        "station": station,
+        "limit": limit,
+        "fields[]": [
+            "stationboard/stop/departure",
+            "stationboard/stop/delay",
+            "stationboard/category",
+            "stationboard/number",
+            "stationboard/to"
+        ]
+    }
+
+    return requests.get(api_url, params)
+
+response = get_request(DEFAULT_STATION, DEFAULT_LIMIT)
+data = json.loads(response.content)
+decoded = StationboardResponse(**data)
+
+decoded.stationboard
+
+print(decoded.stationboard)
