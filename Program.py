@@ -30,13 +30,14 @@ decoded = StationboardResponse(**data)
 decoded.stationboard
 
 for sb in decoded.stationboard:
-    departure = Stop.departure(sb)
-    delay = " +" + Stop.delay(sb)
-    vehicle = Stationboard.category(sb) + Stationboard.number(sb)
-    destination = Stationboard.to(sb)
+    departure = sb.stop.departure
+    delay = sb.stop.delay
+    # in care the is/is no delay
+    if delay is not None:
+        delay_min = f" + {delay} min"
+    else:
+        delay_min = ""
+    vehicle = f"{sb.category}{sb.number}"
+    destination = sb.to
 
-
-
-
-
-#print(decoded.stationboard)
+print(f"Departure: {departure}, Delay: {delay_min}, Vehicle: {vehicle}, Destination: {destination}")
